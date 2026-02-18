@@ -1,0 +1,1262 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0f0f0f" id="themeMetaColor">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Doable</title>
+<link rel="manifest" href="manifest.json">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Fira+Code:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ===== DESIGN TOKENS ===== */
+:root {
+  --font-display: 'Cormorant Garamond', serif;
+  --font-mono: 'Fira Code', monospace;
+}
+
+[data-theme="dark"] {
+  --bg: #0f0f0f;
+  --bg2: #171717;
+  --surface: #1e1e1e;
+  --surface2: #252525;
+  --border: #2c2c2c;
+  --border2: #383838;
+  --text: #f2ede8;
+  --text2: #a09890;
+  --text3: #5a5450;
+  --accent: #e8c547;
+  --accent-dim: rgba(232,197,71,0.12);
+  --accent-text: #000;
+  --danger: #e85f47;
+  --danger-dim: rgba(232,95,71,0.12);
+  --green: #5ee878;
+  --green-dim: rgba(94,232,120,0.12);
+  --blue: #47a8e8;
+  --blue-dim: rgba(71,168,232,0.12);
+  --orange: #e89147;
+  --shadow: 0 4px 24px rgba(0,0,0,0.5);
+  --theme-toggle-bg: #2c2c2c;
+}
+
+[data-theme="light"] {
+  --bg: #f5f2ee;
+  --bg2: #ede9e4;
+  --surface: #ffffff;
+  --surface2: #f9f7f4;
+  --border: #ddd9d4;
+  --border2: #ccc8c2;
+  --text: #1a1714;
+  --text2: #6b6460;
+  --text3: #a09890;
+  --accent: #c9900a;
+  --accent-dim: rgba(201,144,10,0.1);
+  --accent-text: #fff;
+  --danger: #d43b24;
+  --danger-dim: rgba(212,59,36,0.1);
+  --green: #1a8c3a;
+  --green-dim: rgba(26,140,58,0.1);
+  --blue: #1a72b8;
+  --blue-dim: rgba(26,114,184,0.1);
+  --orange: #c97020;
+  --shadow: 0 4px 24px rgba(0,0,0,0.1);
+  --theme-toggle-bg: #ddd9d4;
+}
+
+/* ===== RESET ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-mono);
+  min-height: 100vh;
+  transition: background 0.3s, color 0.3s;
+}
+
+/* ===== LAYOUT ===== */
+.app {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 0 16px 120px;
+}
+
+/* ===== HEADER ===== */
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 40px 0 32px;
+  gap: 16px;
+}
+
+.header-left h1 {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 10vw, 5rem);
+  font-weight: 700;
+  line-height: 0.9;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+
+.header-left h1 span {
+  color: var(--accent);
+}
+
+.date-line {
+  font-size: 0.65rem;
+  color: var(--text3);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-top: 10px;
+}
+
+.header-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-top: 8px;
+  flex-shrink: 0;
+}
+
+/* ===== THEME TOGGLE ===== */
+.theme-toggle {
+  position: relative;
+  width: 48px;
+  height: 26px;
+  background: var(--theme-toggle-bg);
+  border: 1px solid var(--border2);
+  border-radius: 13px;
+  cursor: pointer;
+  transition: all 0.3s;
+  flex-shrink: 0;
+}
+
+.theme-toggle::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--accent);
+  transition: transform 0.3s;
+}
+
+[data-theme="light"] .theme-toggle::after {
+  transform: translateX(22px);
+}
+
+.theme-icon {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 9px;
+}
+.theme-icon.moon { left: 5px; }
+.theme-icon.sun  { right: 5px; }
+
+/* ===== STATS BAR ===== */
+.stats-bar {
+  display: flex;
+  gap: 0;
+  margin-bottom: 28px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.stat {
+  flex: 1;
+  padding: 12px 16px;
+  border-right: 1px solid var(--border);
+  text-align: center;
+}
+
+.stat:last-child { border-right: none; }
+
+.stat-num {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--text);
+}
+
+.stat-label {
+  font-size: 0.55rem;
+  color: var(--text3);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+/* ===== PROGRESS ===== */
+.progress-wrap {
+  margin-bottom: 28px;
+}
+
+.progress-bar {
+  height: 3px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 2px;
+  transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+}
+
+/* ===== ADD TASK PANEL ===== */
+.add-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  margin-bottom: 28px;
+  overflow: hidden;
+}
+
+.add-top {
+  display: flex;
+}
+
+.add-input {
+  flex: 1;
+  background: none;
+  border: none;
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  padding: 15px 16px;
+  outline: none;
+}
+
+.add-input::placeholder { color: var(--text3); }
+
+.add-submit {
+  background: var(--accent);
+  border: none;
+  color: var(--accent-text);
+  cursor: pointer;
+  font-size: 1.3rem;
+  padding: 0 20px;
+  font-weight: bold;
+  transition: opacity 0.15s;
+  flex-shrink: 0;
+}
+
+.add-submit:hover { opacity: 0.85; }
+
+.add-meta {
+  display: flex;
+  gap: 0;
+  border-top: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+
+.meta-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-right: 1px solid var(--border);
+  flex: 1;
+  min-width: 140px;
+}
+
+.meta-field:last-child { border-right: none; }
+
+.meta-label {
+  font-size: 0.6rem;
+  color: var(--text3);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+.meta-select, .meta-date {
+  background: none;
+  border: none;
+  color: var(--text2);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  outline: none;
+  cursor: pointer;
+  flex: 1;
+  min-width: 0;
+}
+
+.meta-select option { background: var(--surface); color: var(--text); }
+
+/* ===== TOOLBAR ===== */
+.toolbar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.filter-group {
+  display: flex;
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.filter-btn {
+  background: none;
+  border: none;
+  border-right: 1px solid var(--border);
+  color: var(--text3);
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  padding: 8px 14px;
+  text-transform: uppercase;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.filter-btn:last-child { border-right: none; }
+.filter-btn.active { background: var(--accent); color: var(--accent-text); }
+.filter-btn:hover:not(.active) { color: var(--text); background: var(--surface2); }
+
+.sort-select {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text2);
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  padding: 8px 12px;
+  outline: none;
+  cursor: pointer;
+  text-transform: uppercase;
+  margin-left: auto;
+}
+
+.sort-select option { background: var(--surface); }
+
+/* ===== CATEGORY CHIPS ===== */
+.category-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.cat-chip {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text3);
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  padding: 5px 12px;
+  transition: all 0.15s;
+  text-transform: lowercase;
+  border-radius: 20px;
+}
+
+.cat-chip.active { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+.cat-chip:hover:not(.active) { border-color: var(--border2); color: var(--text2); }
+
+/* ===== TASK LIST ===== */
+.section-label {
+  font-size: 0.58rem;
+  color: var(--text3);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  margin-top: 20px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+.task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* ===== TASK ITEM ===== */
+.task {
+  background: var(--surface);
+  border: 1px solid transparent;
+  padding: 0;
+  transition: border-color 0.15s, opacity 0.2s;
+  animation: fadeSlideIn 0.22s ease;
+  overflow: hidden;
+}
+
+.task:hover { border-color: var(--border); }
+.task.done { opacity: 0.5; }
+
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.task-main {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 14px;
+}
+
+.task-check {
+  width: 20px;
+  height: 20px;
+  border: 1.5px solid var(--border2);
+  cursor: pointer;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+  background: none;
+}
+
+.task-check:hover { border-color: var(--accent); }
+.task-check.done { background: var(--accent); border-color: var(--accent); }
+.task-check.done::after {
+  content: '';
+  width: 5px;
+  height: 9px;
+  border-right: 2px solid var(--accent-text);
+  border-bottom: 2px solid var(--accent-text);
+  transform: rotate(45deg) translateY(-1px);
+  display: block;
+}
+
+.task-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.task-text {
+  font-size: 0.83rem;
+  line-height: 1.4;
+  color: var(--text);
+  outline: none;
+  cursor: text;
+  word-break: break-word;
+}
+
+.task.done .task-text {
+  text-decoration: line-through;
+  color: var(--text3);
+}
+
+.task-badges {
+  display: flex;
+  gap: 5px;
+  margin-top: 5px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.badge {
+  font-size: 0.55rem;
+  letter-spacing: 0.08em;
+  padding: 2px 8px;
+  border-radius: 2px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.badge-cat {
+  background: var(--blue-dim);
+  color: var(--blue);
+  border: 1px solid rgba(71,168,232,0.2);
+}
+
+.badge-pri-high {
+  background: var(--danger-dim);
+  color: var(--danger);
+  border: 1px solid rgba(232,95,71,0.2);
+}
+
+.badge-pri-med {
+  background: var(--accent-dim);
+  color: var(--accent);
+  border: 1px solid rgba(232,197,71,0.2);
+}
+
+.badge-pri-low {
+  background: var(--green-dim);
+  color: var(--green);
+  border: 1px solid rgba(94,232,120,0.2);
+}
+
+.badge-due {
+  background: var(--surface2);
+  color: var(--text2);
+  border: 1px solid var(--border);
+}
+
+.badge-due.overdue {
+  background: var(--danger-dim);
+  color: var(--danger);
+  border-color: rgba(232,95,71,0.3);
+}
+
+.badge-due.today {
+  background: var(--orange);
+  color: #fff;
+  border-color: var(--orange);
+}
+
+.task-actions {
+  display: flex;
+  gap: 2px;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.task:hover .task-actions { opacity: 1; }
+
+.task-btn {
+  background: none;
+  border: none;
+  color: var(--text3);
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 4px 6px;
+  transition: color 0.15s;
+}
+
+.task-btn:hover { color: var(--text); }
+.task-btn.del:hover { color: var(--danger); }
+
+/* ===== EMPTY STATE ===== */
+.empty {
+  text-align: center;
+  padding: 60px 20px;
+  display: none;
+}
+
+.empty.visible { display: block; }
+
+.empty-icon {
+  font-size: 2.5rem;
+  margin-bottom: 12px;
+  opacity: 0.3;
+}
+
+.empty-text {
+  font-size: 0.7rem;
+  color: var(--text3);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* ===== MODAL ===== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 20px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+  backdrop-filter: blur(4px);
+}
+
+.modal-overlay.open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.modal {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  padding: 28px;
+  width: 100%;
+  max-width: 420px;
+  transform: translateY(10px);
+  transition: transform 0.2s;
+}
+
+.modal-overlay.open .modal { transform: translateY(0); }
+
+.modal-title {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.modal-field {
+  margin-bottom: 16px;
+}
+
+.modal-label {
+  font-size: 0.6rem;
+  color: var(--text3);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.modal-input, .modal-select, .modal-textarea {
+  width: 100%;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  padding: 10px 12px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.modal-input:focus, .modal-select:focus, .modal-textarea:focus {
+  border-color: var(--accent);
+}
+
+.modal-textarea { min-height: 70px; resize: vertical; }
+.modal-select option { background: var(--surface); }
+
+.modal-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.btn-primary {
+  flex: 1;
+  background: var(--accent);
+  border: none;
+  color: var(--accent-text);
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  padding: 12px;
+  text-transform: uppercase;
+  transition: opacity 0.15s;
+}
+
+.btn-primary:hover { opacity: 0.85; }
+
+.btn-ghost {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text2);
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  padding: 12px 16px;
+  text-transform: uppercase;
+  transition: all 0.15s;
+}
+
+.btn-ghost:hover { border-color: var(--border2); color: var(--text); }
+
+/* ===== INSTALL BANNER ===== */
+.install-banner {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  z-index: 50;
+  transform: translateY(100%);
+  transition: transform 0.3s ease;
+  box-shadow: var(--shadow);
+}
+
+.install-banner.visible { transform: translateY(0); }
+
+.install-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.install-text {
+  flex: 1;
+}
+
+.install-text strong {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+
+.install-text span {
+  font-size: 0.65rem;
+  color: var(--text3);
+}
+
+.install-btn {
+  background: var(--accent);
+  border: none;
+  color: var(--accent-text);
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  padding: 9px 16px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.install-dismiss {
+  background: none;
+  border: none;
+  color: var(--text3);
+  cursor: pointer;
+  font-size: 1.1rem;
+  padding: 4px;
+}
+
+/* ===== NOTIFICATION PERMISSION ===== */
+.notif-hint {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--blue-dim);
+  border: 1px solid rgba(71,168,232,0.2);
+  padding: 10px 14px;
+  margin-bottom: 20px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.notif-hint:hover { background: rgba(71,168,232,0.18); }
+.notif-hint span { font-size: 0.68rem; color: var(--blue); letter-spacing: 0.05em; }
+.notif-hint-icon { font-size: 1rem; }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 520px) {
+  .add-meta { flex-direction: column; }
+  .meta-field { border-right: none; border-bottom: 1px solid var(--border); }
+  .meta-field:last-child { border-bottom: none; }
+  .toolbar { flex-wrap: wrap; }
+  .stats-bar { flex-wrap: wrap; }
+  .stat { min-width: 33%; border-bottom: 1px solid var(--border); }
+}
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border2); }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-left">
+      <h1>Do<span>able</span></h1>
+      <div class="date-line" id="dateLine"></div>
+    </div>
+    <div class="header-actions">
+      <div class="theme-toggle" id="themeToggle" title="Toggle theme">
+        <span class="theme-icon moon">🌙</span>
+        <span class="theme-icon sun">☀️</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- STATS BAR -->
+  <div class="stats-bar">
+    <div class="stat">
+      <div class="stat-num" id="statTotal">0</div>
+      <div class="stat-label">Total</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num" id="statActive">0</div>
+      <div class="stat-label">Active</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num" id="statDone">0</div>
+      <div class="stat-label">Done</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num" id="statOverdue">0</div>
+      <div class="stat-label">Overdue</div>
+    </div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="progress-wrap">
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill" style="width:0%"></div>
+    </div>
+  </div>
+
+  <!-- NOTIFICATION HINT -->
+  <div class="notif-hint" id="notifHint" style="display:none" onclick="requestNotifications()">
+    <span class="notif-hint-icon">🔔</span>
+    <span>Enable reminders to get notified about due tasks</span>
+    <span style="margin-left:auto;font-size:0.6rem;opacity:0.7">TAP TO ALLOW →</span>
+  </div>
+
+  <!-- ADD TASK PANEL -->
+  <div class="add-panel">
+    <div class="add-top">
+      <input type="text" class="add-input" id="addInput" placeholder="What needs to be done?" maxlength="140">
+      <button class="add-submit" onclick="addTask()">+</button>
+    </div>
+    <div class="add-meta">
+      <div class="meta-field">
+        <span class="meta-label">Cat.</span>
+        <select class="meta-select" id="addCat">
+          <option value="">none</option>
+          <option value="work">work</option>
+          <option value="personal">personal</option>
+          <option value="health">health</option>
+          <option value="finance">finance</option>
+          <option value="learning">learning</option>
+          <option value="home">home</option>
+        </select>
+      </div>
+      <div class="meta-field">
+        <span class="meta-label">Pri.</span>
+        <select class="meta-select" id="addPri">
+          <option value="med">medium</option>
+          <option value="high">high</option>
+          <option value="low">low</option>
+        </select>
+      </div>
+      <div class="meta-field">
+        <span class="meta-label">Due</span>
+        <input type="date" class="meta-date" id="addDue">
+      </div>
+    </div>
+  </div>
+
+  <!-- TOOLBAR -->
+  <div class="toolbar">
+    <div class="filter-group">
+      <button class="filter-btn active" onclick="setFilter('all',this)">All</button>
+      <button class="filter-btn" onclick="setFilter('active',this)">Active</button>
+      <button class="filter-btn" onclick="setFilter('done',this)">Done</button>
+      <button class="filter-btn" onclick="setFilter('overdue',this)">Overdue</button>
+    </div>
+    <select class="sort-select" id="sortSelect" onchange="render()">
+      <option value="created">Newest</option>
+      <option value="due">Due date</option>
+      <option value="priority">Priority</option>
+      <option value="alpha">A–Z</option>
+    </select>
+  </div>
+
+  <!-- CATEGORY CHIPS -->
+  <div class="category-row" id="categoryRow"></div>
+
+  <!-- TASK LIST -->
+  <div id="activeSection">
+    <div class="section-label" id="activeSectionLabel" style="display:none"></div>
+    <div class="task-list" id="taskList"></div>
+    <div class="empty" id="emptyState">
+      <div class="empty-icon">✦</div>
+      <div class="empty-text">Nothing here</div>
+    </div>
+  </div>
+
+  <div id="doneSection" style="display:none">
+    <div class="section-label">Completed</div>
+    <div class="task-list" id="doneList"></div>
+  </div>
+
+</div>
+
+<!-- EDIT MODAL -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal">
+    <div class="modal-title">Edit Task</div>
+    <div class="modal-field">
+      <label class="modal-label">Task</label>
+      <textarea class="modal-textarea" id="editText"></textarea>
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">Category</label>
+      <select class="modal-select" id="editCat">
+        <option value="">none</option>
+        <option value="work">work</option>
+        <option value="personal">personal</option>
+        <option value="health">health</option>
+        <option value="finance">finance</option>
+        <option value="learning">learning</option>
+        <option value="home">home</option>
+      </select>
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">Priority</label>
+      <select class="modal-select" id="editPri">
+        <option value="low">Low</option>
+        <option value="med">Medium</option>
+        <option value="high">High</option>
+      </select>
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">Due Date</label>
+      <input type="date" class="modal-input" id="editDue">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn-primary" onclick="saveEdit()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- INSTALL BANNER -->
+<div class="install-banner" id="installBanner">
+  <div class="install-icon">📲</div>
+  <div class="install-text">
+    <strong>Install Doable</strong>
+    <span>Add to home screen for quick access</span>
+  </div>
+  <button class="install-btn" id="installBtn">Install</button>
+  <button class="install-dismiss" onclick="dismissInstall()">✕</button>
+</div>
+
+<script>
+// ===== STATE =====
+let tasks = JSON.parse(localStorage.getItem('doable-tasks') || '[]');
+let theme = localStorage.getItem('doable-theme') || 'dark';
+let filter = 'all';
+let activeCategory = 'all';
+let editingId = null;
+let deferredInstallPrompt = null;
+
+// ===== INIT =====
+document.documentElement.setAttribute('data-theme', theme);
+updateDateLine();
+
+document.getElementById('addInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') addTask();
+});
+
+// Service Worker
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').catch(() => {});
+}
+
+// Install prompt
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  setTimeout(() => {
+    document.getElementById('installBanner').classList.add('visible');
+  }, 2000);
+});
+
+document.getElementById('installBtn').addEventListener('click', async () => {
+  if (!deferredInstallPrompt) return;
+  deferredInstallPrompt.prompt();
+  const { outcome } = await deferredInstallPrompt.userChoice;
+  if (outcome === 'accepted') dismissInstall();
+  deferredInstallPrompt = null;
+});
+
+// Notification check
+if ('Notification' in window && Notification.permission === 'default') {
+  document.getElementById('notifHint').style.display = 'flex';
+}
+
+// Theme toggle
+document.getElementById('themeToggle').addEventListener('click', () => {
+  theme = theme === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', theme);
+  document.getElementById('themeMetaColor').setAttribute('content', theme === 'dark' ? '#0f0f0f' : '#f5f2ee');
+  localStorage.setItem('doable-theme', theme);
+});
+
+// ===== UTILS =====
+function save() {
+  localStorage.setItem('doable-tasks', JSON.stringify(tasks));
+}
+
+function updateDateLine() {
+  const d = new Date();
+  const opts = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+  document.getElementById('dateLine').textContent = d.toLocaleDateString('en-US', opts);
+}
+
+function dueBadgeClass(due) {
+  if (!due) return '';
+  const today = new Date(); today.setHours(0,0,0,0);
+  const d = new Date(due + 'T00:00:00');
+  if (d < today) return 'overdue';
+  if (d.getTime() === today.getTime()) return 'today';
+  return '';
+}
+
+function formatDue(due) {
+  if (!due) return '';
+  const today = new Date(); today.setHours(0,0,0,0);
+  const d = new Date(due + 'T00:00:00');
+  if (d.getTime() === today.getTime()) return 'today';
+  const diff = Math.round((d - today) / 86400000);
+  if (diff === 1) return 'tomorrow';
+  if (diff === -1) return 'yesterday';
+  if (diff < 0) return `${Math.abs(diff)}d overdue`;
+  if (diff <= 7) return `in ${diff}d`;
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+function isOverdue(task) {
+  if (!task.due || task.done) return false;
+  const today = new Date(); today.setHours(0,0,0,0);
+  return new Date(task.due + 'T00:00:00') < today;
+}
+
+function priorityOrder(p) { return p === 'high' ? 0 : p === 'med' ? 1 : 2; }
+
+// ===== ADD TASK =====
+function addTask() {
+  const text = document.getElementById('addInput').value.trim();
+  if (!text) return;
+  const task = {
+    id: Date.now(),
+    text,
+    done: false,
+    cat: document.getElementById('addCat').value,
+    pri: document.getElementById('addPri').value,
+    due: document.getElementById('addDue').value,
+    created: Date.now()
+  };
+  tasks.unshift(task);
+  document.getElementById('addInput').value = '';
+  document.getElementById('addDue').value = '';
+  save();
+  render();
+  scheduleReminder(task);
+}
+
+// ===== TOGGLE =====
+function toggle(id) {
+  const t = tasks.find(t => t.id === id);
+  if (t) t.done = !t.done;
+  save();
+  render();
+}
+
+// ===== DELETE =====
+function deleteTask(id) {
+  tasks = tasks.filter(t => t.id !== id);
+  save();
+  render();
+}
+
+// ===== EDIT MODAL =====
+function openEdit(id) {
+  editingId = id;
+  const t = tasks.find(t => t.id === id);
+  if (!t) return;
+  document.getElementById('editText').value = t.text;
+  document.getElementById('editCat').value = t.cat || '';
+  document.getElementById('editPri').value = t.pri || 'med';
+  document.getElementById('editDue').value = t.due || '';
+  document.getElementById('editModal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('editModal').classList.remove('open');
+  editingId = null;
+}
+
+function saveEdit() {
+  const t = tasks.find(t => t.id === editingId);
+  if (!t) return;
+  t.text = document.getElementById('editText').value.trim() || t.text;
+  t.cat  = document.getElementById('editCat').value;
+  t.pri  = document.getElementById('editPri').value;
+  t.due  = document.getElementById('editDue').value;
+  save();
+  closeModal();
+  render();
+  scheduleReminder(t);
+}
+
+document.getElementById('editModal').addEventListener('click', e => {
+  if (e.target === document.getElementById('editModal')) closeModal();
+});
+
+// ===== FILTERS =====
+function setFilter(f, btn) {
+  filter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  render();
+}
+
+function setCategory(cat) {
+  activeCategory = cat;
+  render();
+}
+
+// ===== INSTALL =====
+function dismissInstall() {
+  document.getElementById('installBanner').classList.remove('visible');
+}
+
+// ===== NOTIFICATIONS =====
+async function requestNotifications() {
+  if (!('Notification' in window)) return;
+  const perm = await Notification.requestPermission();
+  if (perm === 'granted') {
+    document.getElementById('notifHint').style.display = 'none';
+    new Notification('Doable', { body: 'Reminders enabled! You\'ll be notified about due tasks.', icon: './manifest.json' });
+    schedulePendingReminders();
+  }
+}
+
+function scheduleReminder(task) {
+  if (!task.due || task.done || Notification.permission !== 'granted') return;
+  const due = new Date(task.due + 'T09:00:00');
+  const now = new Date();
+  const ms = due - now;
+  if (ms > 0) {
+    setTimeout(() => {
+      new Notification(`Due today: ${task.text}`, {
+        body: task.cat ? `Category: ${task.cat}` : 'You have a task due today!',
+      });
+    }, ms);
+  }
+}
+
+function schedulePendingReminders() {
+  tasks.filter(t => !t.done && t.due).forEach(scheduleReminder);
+}
+
+// ===== RENDER =====
+function render() {
+  // Get sorted & filtered tasks
+  let sorted = [...tasks];
+  const sort = document.getElementById('sortSelect').value;
+  if (sort === 'due') sorted.sort((a,b) => (a.due||'9999') < (b.due||'9999') ? -1 : 1);
+  else if (sort === 'priority') sorted.sort((a,b) => priorityOrder(a.pri) - priorityOrder(b.pri));
+  else if (sort === 'alpha') sorted.sort((a,b) => a.text.localeCompare(b.text));
+  else sorted.sort((a,b) => b.created - a.created);
+
+  // Category filter
+  if (activeCategory !== 'all') sorted = sorted.filter(t => t.cat === activeCategory);
+
+  // Status filter
+  let visible = sorted;
+  if (filter === 'active')  visible = sorted.filter(t => !t.done);
+  if (filter === 'done')    visible = sorted.filter(t => t.done);
+  if (filter === 'overdue') visible = sorted.filter(t => isOverdue(t));
+
+  const activeTasks = visible.filter(t => !t.done);
+  const doneTasks   = visible.filter(t => t.done);
+
+  // Build category chips
+  const allCats = [...new Set(tasks.map(t => t.cat).filter(Boolean))];
+  const catRow = document.getElementById('categoryRow');
+  catRow.innerHTML = '';
+  if (allCats.length > 0) {
+    const allChip = document.createElement('button');
+    allChip.className = 'cat-chip' + (activeCategory === 'all' ? ' active' : '');
+    allChip.textContent = 'all';
+    allChip.onclick = () => { activeCategory = 'all'; render(); };
+    catRow.appendChild(allChip);
+    allCats.forEach(cat => {
+      const chip = document.createElement('button');
+      chip.className = 'cat-chip' + (activeCategory === cat ? ' active' : '');
+      chip.textContent = cat;
+      chip.onclick = () => { activeCategory = cat; render(); };
+      catRow.appendChild(chip);
+    });
+  }
+
+  // Stats
+  const all = tasks;
+  const overdueCount = all.filter(t => isOverdue(t)).length;
+  document.getElementById('statTotal').textContent  = all.length;
+  document.getElementById('statActive').textContent = all.filter(t => !t.done).length;
+  document.getElementById('statDone').textContent   = all.filter(t => t.done).length;
+  document.getElementById('statOverdue').textContent = overdueCount;
+
+  const total = all.length;
+  const done  = all.filter(t => t.done).length;
+  document.getElementById('progressFill').style.width = total ? `${Math.round(done/total*100)}%` : '0%';
+
+  // Render active list
+  renderList(document.getElementById('taskList'), activeTasks);
+
+  // Render done section
+  const doneSection = document.getElementById('doneSection');
+  if (doneTasks.length > 0 && filter !== 'active' && filter !== 'overdue') {
+    doneSection.style.display = 'block';
+    renderList(document.getElementById('doneList'), doneTasks);
+  } else {
+    doneSection.style.display = 'none';
+  }
+
+  // Empty state
+  const showEmpty = activeTasks.length === 0 && (doneTasks.length === 0 || filter === 'active' || filter === 'overdue');
+  document.getElementById('emptyState').classList.toggle('visible', showEmpty);
+}
+
+function renderList(container, items) {
+  container.innerHTML = '';
+  items.forEach(task => {
+    const el = document.createElement('div');
+    el.className = 'task' + (task.done ? ' done' : '');
+    el.dataset.id = task.id;
+
+    const dueClass = dueBadgeClass(task.due);
+    const dueLabel = formatDue(task.due);
+
+    const badges = [];
+    if (task.cat) badges.push(`<span class="badge badge-cat">${task.cat}</span>`);
+    if (task.pri === 'high') badges.push(`<span class="badge badge-pri-high">high</span>`);
+    if (task.pri === 'low')  badges.push(`<span class="badge badge-pri-low">low</span>`);
+    if (task.pri === 'med')  badges.push(`<span class="badge badge-pri-med">med</span>`);
+    if (task.due) badges.push(`<span class="badge badge-due ${dueClass}">${dueLabel}</span>`);
+
+    el.innerHTML = `
+      <div class="task-main">
+        <div class="task-check ${task.done ? 'done' : ''}" onclick="toggle(${task.id})"></div>
+        <div class="task-body">
+          <div class="task-text">${escHtml(task.text)}</div>
+          ${badges.length ? `<div class="task-badges">${badges.join('')}</div>` : ''}
+        </div>
+        <div class="task-actions">
+          <button class="task-btn" onclick="openEdit(${task.id})" title="Edit">✎</button>
+          <button class="task-btn del" onclick="deleteTask(${task.id})" title="Delete">✕</button>
+        </div>
+      </div>
+    `;
+    container.appendChild(el);
+  });
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// Initial render
+render();
+
+// Schedule reminders for existing tasks
+if (Notification.permission === 'granted') schedulePendingReminders();
+</script>
+</body>
+</html>
