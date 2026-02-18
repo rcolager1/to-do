@@ -2,7 +2,7 @@
   "name": "Doable — To-Do App",
   "short_name": "Doable",
   "description": "A beautiful, installable to-do list app",
-  "start_url": "./index.html",
+  "start_url": ".",
   "display": "standalone",
   "background_color": "#0f0f0f",
   "theme_color": "#0f0f0f",
